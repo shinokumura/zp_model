@@ -1,8 +1,16 @@
-from params import CN, ZCN, ACN
-from ya import gen_massdist,read_massdist
-from zp import fractionZp
-from excite import gen_tke_a, fragment_excitation_energy
-from func import mass_excess,n_ind_sep_en
+
+import sys
+sys.path.append('./script')
+
+if len(sys.argv) > 1:
+    massmode = sys.argv[1]
+    filename = sys.argv[2]
+
+from script.params import CN, ZCN, ACN
+from script.ya import gen_massdist,read_massdist
+from script.zp import fractionZp
+from script.excite import gen_tke_a, fragment_excitation_energy
+from script.func import mass_excess,n_ind_sep_en
 
 
 def main(massmode="generate",filename=""):

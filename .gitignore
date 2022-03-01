@@ -1,5 +1,7 @@
 # masOS hidden files
 *.DS_Store
+__pycache__/
+script/__pycache__/
 
 # LaTeX build files
 *.dvi
