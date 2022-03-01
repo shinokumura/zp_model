@@ -1,0 +1,38 @@
+# masOS hidden files
+*.DS_Store
+
+# LaTeX build files
+*.dvi
+*.aux
+*.blg
+*.lof
+*.log
+*.lot
+*.out
+*.ttt
+*.fff
+*.synctex.gz
+*.synctex
+*.toc
+*.spl
+leer.eps
+*.spl
+*.sh
+*~
+#delayedn.pdf
+
+# other temporary files
+\#*\#
+.\#*
+ref/*
+*conflicted*
+*.swp
+*.bak
+
+# Automatically generated eps and convert outputs
+*-eps-converted-to.pdf
+
+# private files if you want to keep them locally
+local
+
+#plot/*.eps

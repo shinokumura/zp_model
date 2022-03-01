@@ -1,0 +1,10 @@
+site_name: pytest-zpmodel
+site_description: Revised Zp model
+site_author: Shin Okumura
+
+theme: readthedocs
+
+repo_url: https://github.com/s.okumura@iaea.org/pytest-zpmodel
+
+pages:
+- Home: index.md
