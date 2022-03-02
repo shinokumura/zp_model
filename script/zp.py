@@ -4,8 +4,9 @@ import numpy as np
 import pandas as pd
 
 from func import gaussian, ucd, normalization, eshellKTUY, sep_nuclide
-from params import ACN, ZCN, SIGMAZ, Y_CUTOFF
+from params import CN, ACN, ZCN, SIGMAZ, Y_CUTOFF
 from ya import gen_massdist
+from wahl import wahl_systematics
 
 
 def _gen_z_range():
@@ -16,15 +17,14 @@ def _gen_z_range():
     return np.linspace(MIN_Z, MAX_Z, n_sample)
 
 
-def _gen_z_range_in_mass(cn, zucd):
+def _gen_z_range_in_mass(cn, zucd, deltaZ):
     zcn, _ = sep_nuclide(cn)
+    # if zucd < zcn / 2:
+    #     zucd = zucd - deltaZ
+    # elif zucd > zcn / 2:
+    zucd = zucd + deltaZ
 
-    if zucd < zcn / 2:
-        zucd = zucd + 0.5
-    elif zucd > zcn / 2:
-        zucd = zucd - 0.5
-
-    return np.linspace(int(zucd - 6), int(zucd + 6), 13)
+    return np.linspace(int(zucd - 9), int(zucd + 9), 19)
 
 
 def ucdZp(fissile, mass_df):
@@ -54,47 +54,64 @@ def ucdZp(fissile, mass_df):
     return df
 
 
-def fractionZp(cn, mass_df, eo_model="wahl"):
+def fractional_yield():
+    v = (z - zp + 0.5) / (sigZ * math.sqrt(2))
+    w = (z - zp - 0.5) / (sigZ * math.sqrt(2))
+
+    ## each mass's fractional yield
+    fracyield = 0.5 * fa * (math.erf(v) - math.erf(w))
+
+
+def fractionZp(mass_df, model = "wahl_zp", eo_model=""):
     df = pd.DataFrame(columns=["charge_h", "mass_h", "pair_yield"])
 
     for _, row in mass_df.iterrows():
-        # print (row)
         a = row["mass"]
         y = row["yield"]
 
-        # because it is symmetric
+        ## because it is symmetric
         if a >= ACN / 2:
-            # determin the Z range in particular A
-            zucd = ucd(cn, a)
-            z_range_in_a = _gen_z_range_in_mass(cn, zucd)
-            fracyields = []
 
-            for z in z_range_in_a:
-                n = a - z
+            if model == "wahl_zp":
+                ## full Wahl systematics
+                wahl_params = wahl_systematics(a)
+                deltaZ = wahl_params[0]
+                sigZ = wahl_params[1]
+                fa = wahl_params[2]
 
-                deltaZ = _wahl_deltaZ_term()
-                sigZ = _wahl_sigma_term()
+            elif model == "fixed":
+                ## partially Wahl systematics + changeable even-odd model
 
-                if a > ACN / 2:  # heavy fragment
-                    zp = ucd(cn, a) + deltaZ
-                elif a <= ACN / 2:  # light fragment
-                    zp = ucd(cn, a) - deltaZ
-
+                from params import DELTAZ, SIGMAZ
+                deltaZ = DELTAZ
+                sigZ = SIGMAZ
                 if eo_model == "wahl":
                     fa = _wahl_evenodd_term(z, n)
                 elif eo_model == "minato":
                     fa = _minato_evenodd_term(z, n)
                 elif eo_model == "titech":
                     fa = _titech_evenodd_term(z, n)
+            else:
+                deltaZ = _wahl_deltaZ_term()
+                sigZ = _wahl_sigma_term
+                fa = 1.0
+            
+            ## determin the Z range wothin this A
+            zucd = ucd(CN, a)
+            z_range_in_a = _gen_z_range_in_mass(CN, zucd, deltaZ)
 
-                # print (a, z, deltaZ, sigZ, zp, fa)
+            fracyields = []
+            for z in z_range_in_a:
+                n = a - z
+
+                ## deltaZ should be negative for heavy and positive for light fragments
+                zp = ucd(CN, a) + deltaZ
 
                 v = (z - zp + 0.5) / (sigZ * math.sqrt(2))
                 w = (z - zp - 0.5) / (sigZ * math.sqrt(2))
 
                 ## each mass's fractional yield
                 fracyield = 0.5 * fa * (math.erf(v) - math.erf(w))
-                # print(a, z, fracyield)
 
                 ## list of yields in the same mass
                 if fracyield >= Y_CUTOFF:
@@ -102,9 +119,9 @@ def fractionZp(cn, mass_df, eo_model="wahl"):
                 else:
                     fracyields.append(0.0)
 
-            ## normalize the fractional yield with the mass yield
+                ## normalize the fractional yield with the mass yield
             fracyields = normalization(fracyields, y)
-            # print(a, fracyields)
+            # print(len(z_range_in_a), len(fracyields))
 
             ## temporary dataframe
             df2 = pd.DataFrame(columns=["charge_h", "mass_h", "pair_yield"])
@@ -114,13 +131,14 @@ def fractionZp(cn, mass_df, eo_model="wahl"):
             df = pd.concat([df, df2])
 
     ## just convert data type
+    df = df[df['pair_yield'] != 0]
     df["pair_yield"] = df["pair_yield"].astype("float64")
 
     ## pair dataframe version
     df.insert(0, "k", range(1, len(df) + 1))
     ## check if it's ok
     # print(df)
-    ## sum of yield should be == 2.0, or 1.0 if only heave
+    ## sum of yield should be == 2.0, or 1.0 if only heavy
     # print(df.sum())
 
     return df
@@ -169,7 +187,6 @@ def _wahl_evenodd_term(z, n):
     else:
         fa = 1.0
 
-    # print(z, n, fa)
     return fa
 
 

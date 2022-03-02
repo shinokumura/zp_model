@@ -1,8 +1,9 @@
 import numpy as np
+import pandas as pd
 import math
 
 from pair import FFPair
-from func import mass_excess, n_ind_sep_en
+from func import mass_excess, n_ind_sep_en, normalization
 from params import ACN, ZCN, EIN, RT, TKE_WIDTH_CONST, TKE_WIDTH
 from ya import _gen_h_mass_range
 from level import ld_shell_correction, kckAsymptoticLevelDensity, ld_data
@@ -107,7 +108,19 @@ def fragment_excitation_energy(tke_ah_dict, fractional_df):
                 "ex_L": eL_mean,
                 "ex_w_L":  eL_width}
 
+    ## normalize to 1.0 again, just in case
+    ffy_l = [ ffy["ffy"] for ffy in fragment_dict.values() ]
+    if sum(ffy_l) != 1.0:
+        ffy_l2 = normalization(ffy_l,1.0)
+        i = 0
+        for key, vals in fragment_dict.items():
+            fragment_dict[key]["ffy"] = ffy_l2[i]
+            i += 1 
+        
+    df = pd.DataFrame.from_dict(fragment_dict, orient='index')
+
     return fragment_dict
+
 
 def _energy_devide(pair, ex):
     '''

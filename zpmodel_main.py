@@ -2,18 +2,17 @@
 import sys
 sys.path.append('./script')
 
-if len(sys.argv) > 1:
-    massmode = sys.argv[1]
-    filename = sys.argv[2]
-
 from script.params import CN, ZCN, ACN
 from script.ya import gen_massdist,read_massdist
 from script.zp import fractionZp
 from script.excite import gen_tke_a, fragment_excitation_energy
 from script.func import mass_excess,n_ind_sep_en
 
-
+if len(sys.argv) > 1:
+    massmode = sys.argv[1]
+    filename = sys.argv[2]
 def main(massmode="generate",filename=""):
+
     ## generate mass distribution
     if massmode == "generate":
         mass_df = gen_massdist(CN)
@@ -25,20 +24,19 @@ def main(massmode="generate",filename=""):
     # print(mass_df)
 
     ## generate fractional yield
-    fractional_df = fractionZp(CN, mass_df, eo_model="wahl")
-    # print(fractional_df)
+    ## option model: wahl_zp, fixed
+    ##        eo_model: if model = fixed, choose the even-odd term model
+    fractional_df = fractionZp(mass_df, model = "wahl_zp", eo_model="")
 
     ## get average TKE(A)
     tke_ah_dict = gen_tke_a()
-    # print(tke_ah_dict)
 
+    ## energy divide into two fragments
     fragment_dict = fragment_excitation_energy(tke_ah_dict, fractional_df)
-    # print(fragment_dict)
 
-    mass_ex_tn = mass_excess(ZCN, ACN - 1)  # only the case of the first chance fission
+    ## separation energy of fissioning system
+    mass_ex_tn = mass_excess(ZCN, ACN - 1)
     mass_ex_cn = mass_excess(ZCN, ACN)
-    
-    # separation energy of fissioning system
     sep_cn = n_ind_sep_en(mass_ex_tn, mass_ex_cn)
 
     ## output
@@ -65,3 +63,4 @@ def main(massmode="generate",filename=""):
 
 if __name__ == "__main__":
     main()
+
