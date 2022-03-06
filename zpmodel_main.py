@@ -11,6 +11,8 @@ from script.func import mass_excess,n_ind_sep_en
 if len(sys.argv) > 1:
     massmode = sys.argv[1]
     filename = sys.argv[2]
+
+
 def main(massmode="generate",filename=""):
 
     ## generate mass distribution
@@ -21,7 +23,6 @@ def main(massmode="generate",filename=""):
             print("please set filename")
         else:
             mass_df = read_massdist(filename)
-    # print(mass_df)
 
     ## generate fractional yield
     ## option model: wahl_zp, fixed

@@ -5,10 +5,6 @@ from func import sep_nuclide
 from decimal import Decimal, ROUND_HALF_UP, ROUND_HALF_EVEN
 from func import elemtoz
 
-# class Nubar(object):
-#     def __init__(self, fissile):
-
-
 def nuA(fissile, energy):
     file = "".join(["data/nuA-", fissile, "-E", energy, ".dat"])
 
@@ -24,7 +20,6 @@ def nuA(fissile, energy):
         )
 
         nuA_df = nuA_df.astype({"mass": "int", "nubarA": "float64",})
-        # print(nuA_df)
         return nuA_df
     else:
         print("no nubar(A) file found for ", fissile, energy)

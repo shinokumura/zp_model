@@ -1,6 +1,6 @@
 ## configs
-# MASSFILE = "data/mass-frdm95.dat"
-MASSFILE = "data/mass-hfb14.dat"
+MASSFILE = "data/mass-frdm95.dat"
+# MASSFILE = "data/mass-hfb14.dat"
 LDFILE = "data/kcksyst.dat"
 
 
@@ -20,6 +20,7 @@ MAX_A = int(ACN / 2 + 50)
 MIN_Z = int(ZCN / 2 - 30)  # assuming the z of FF distributes +/- 30z from symmetric
 MAX_Z = int(ZCN / 2 + 30)
 
+## not used
 ZPFACTOR = [1.00000, 1.00000]
 
 GAUSS1 = [0.79310, 4.82780, 22.99700]

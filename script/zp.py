@@ -121,7 +121,6 @@ def fractionZp(mass_df, model = "wahl_zp", eo_model=""):
 
                 ## normalize the fractional yield with the mass yield
             fracyields = normalization(fracyields, y)
-            # print(len(z_range_in_a), len(fracyields))
 
             ## temporary dataframe
             df2 = pd.DataFrame(columns=["charge_h", "mass_h", "pair_yield"])
@@ -130,11 +129,11 @@ def fractionZp(mass_df, model = "wahl_zp", eo_model=""):
             df2["pair_yield"] = fracyields
             df = pd.concat([df, df2])
 
-    ## just convert data type
+    ## convert data type to float
     df = df[df['pair_yield'] != 0]
     df["pair_yield"] = df["pair_yield"].astype("float64")
 
-    ## pair dataframe version
+    ## store pair yield into dataframe
     df.insert(0, "k", range(1, len(df) + 1))
     ## check if it's ok
     # print(df)
@@ -214,7 +213,6 @@ def _titech_evenodd_term(z, n):
     else:
         epair = 0.0
 
-    # the dumping energy that defines the extent for washing out of the shell and pairing effects. The parameter Ed(A) was adjusted for each mass number A of fission product to reproduce the odd-even staggering or distortion from the Gaussian distribution.
     ed = 1.0 / 0.37  # Taken from FPY_param Figure 14: beta = 1/Ed
 
     foe = math.exp(-(esh + epair) / ed)
@@ -226,138 +224,3 @@ if __name__ == "__main__":
     fractionZp("wahl")
 
 
-"""
-def WahlZp():
-    df = pd.DataFrame(columns = ['mass', 'charge', 'yieldWahl'])
-    
-    for index, row in mass_df.iterrows():
-        a = row['mass']
-        y = row['yield']
-        
-        zucd = ucd(a)
-        z_range = get_z_range(zucd)
-
-        chargedist = []
-        for z in z_range:
-            n = a - z
-
-            deltaZ = WahlDeltaZTerm()
-            sigZ = WahlSigmaTerm()
-
-            if a > ACN/2:     # heavy fragment
-                zp = ucd(a) + deltaZ
-            elif a <= ACN/2:  # light fragment
-                zp = ucd(a) - deltaZ
-
-            fa = WahlEvenOddTerm(z, n)
-
-            # print (a, z, deltaZ, sigZ, zp, fa)
-
-            v = (z - zp + 0.5) / (sigZ * math.sqrt(2)) 
-            w = (z - zp - 0.5) / (sigZ * math.sqrt(2)) 
-
-            fracyield = 0.5 * fa * (math.erf(v) - math.erf(w))
-
-            chargedist.append(fracyield)
-        
-        chargedist = normalization(chargedist, y)
-        # print(chargedist)
-        df2 = pd.DataFrame(columns = ['mass', 'charge', 'yieldWahl'])
-        df2['mass'] = np.linspace(a, a, 11)
-        df2['charge'] = z_range
-        df2['yieldWahl'] = chargedist
-
-        df = df.append(df2, ignore_index=True)
-    # print(df)
-
-    return df
-
-def MinatoZp():
-    df = pd.DataFrame(columns = ['mass', 'charge', 'yieldMinato'])
-    for index, row in mass_df.iterrows():
-        a = row['mass']
-        y = row['yield']
-        
-        zucd = ucd(a)
-        z_range = get_z_range(zucd)
-
-        chargedist = []
-        for z in z_range:
-            n = a - z
-
-            deltaZ = WahlDeltaZTerm()
-            sigZ = WahlSigmaTerm()
-
-            if a > ACN/2:     # heavy fragment
-                zp = ucd(a) + deltaZ
-            elif a <= ACN/2:  # light fragment
-                zp = ucd(a) - deltaZ
-
-            fa = MinatoEvenOddTerm(z, n)
-
-            # print (a, z, deltaZ, sigZ, zp, fa)
-
-            v = (z - zp + 0.5) / (sigZ * math.sqrt(2)) 
-            w = (z - zp - 0.5) / (sigZ * math.sqrt(2)) 
-
-            fracyield = 0.5 * fa * (math.erf(v) - math.erf(w))
-
-            chargedist.append(fracyield)
-        
-        chargedist = normalization(chargedist, y)
-        # print(chargedist)
-        df2 = pd.DataFrame(columns = ['mass', 'charge', 'yieldMinato'])
-        df2['mass'] = np.linspace(a, a, 11)
-        df2['charge'] = z_range
-        df2['yieldMinato'] = chargedist
-
-        df = df.append(df2, ignore_index=True)
-    print (df)
-
-    return df
-
-def TitechZp():
-    df = pd.DataFrame(columns = ['mass', 'charge', 'yieldTitech'])
-    
-    for index, row in mass_df.iterrows():
-        a = row['mass']
-        y = row['yield']
-        
-        zucd = ucd(a)
-        z_range = np.linspace(int(zucd - 5), int(zucd + 5), 11) 
-
-        chargedist = []
-        for z in z_range:
-            n = a - z
-
-            deltaZ = WahlDeltaZTerm()
-            sigZ = WahlSigmaTerm()
-
-            if a > ACN/2:     # heavy fragment
-                zp = ucd(a) + deltaZ
-            elif a <= ACN/2:  # light fragment
-                zp = ucd(a) - deltaZ
-
-            fa = TitechEvenOddTerm(z, n)
-
-            # print (a, z, deltaZ, sigZ, zp, fa)
-
-            v = (z - zp + 0.5) / (sigZ * math.sqrt(2)) 
-            w = (z - zp - 0.5) / (sigZ * math.sqrt(2)) 
-
-            fracyield = 0.5 * fa * (math.erf(v) - math.erf(w))
-
-            chargedist.append(fracyield)
-        
-        chargedist = normalization(chargedist, y)
-        # print(chargedist)
-        df2 = pd.DataFrame(columns = ['mass', 'charge', 'yieldTitech'])
-        df2['mass'] = np.linspace(a, a, 11)
-        df2['charge'] = z_range
-        df2['yieldTitech'] = chargedist
-
-        df = df.append(df2, ignore_index=True)
-    # print(df)
-
-    return df
-"""

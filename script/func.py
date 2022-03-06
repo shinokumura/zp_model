@@ -16,7 +16,6 @@ def gaussian(x_range, amp, mu, sig):
 
 def erf(x_range, amp, d, sig):
     b = 0.5
-    # d = Z(A) - Zp(A) where Zp(A) = Zucd - deltaZ
     return (
         0.5
         * amp
@@ -170,8 +169,8 @@ def sep_nuclide(nuc):
 
 
 def ucd(nuc, a):
-    # should check if the nuclide input is compound or fissile
-    # for the safe, call def sep_nuclide(nuc)
+    ## should check if the nuclide input is compound or fissile
+    ## for the safe, call def sep_nuclide(nuc)
     zcn, acn = sep_nuclide(nuc)
     return (int(zcn) / int(acn)) * a
 
@@ -236,7 +235,6 @@ def read_mass_table():
     z = []
     a = []
     mselect = []
-    # z, a, s, fl, mexp, dmexp, mth, dmth, mselect =  []
     with open(MASSFILE) as f:
         lines = f.readlines()
         for line in lines[5:]:
@@ -253,7 +251,7 @@ def read_mass_table():
 
     df = pd.DataFrame({"Z": z, "A": a, "Mselect": mselect})
 
-    # check
+    ## check
     if df.empty:
         raise TypeError()
 
@@ -282,8 +280,3 @@ def n_ind_sep_en(mass_ex_1, mass_ex_2):  # neutron induced case of separation en
     else:
         return mass_ex
 
-
-# def neutron_separation_energy():
-if __name__ == "__main__":
-    
-    pass

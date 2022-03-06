@@ -12,7 +12,7 @@ def read_ld_data():
     lda = []
     temp = []
     e0 = []
-    # z, a, s, fl, mexp, dmexp, mth, dmth, mselect =  []
+
     with open(LDFILE) as f:
         lines = f.readlines()
         for line in lines[9:]:
@@ -32,7 +32,7 @@ def read_ld_data():
 
     df = pd.DataFrame({"Z": z, "A": a, "Paring": pairing, "Eshell":eshell, "LDa":lda, "Temp": temp, "E0": e0})
 
-    # check if data is read correctry
+    ## check if data is read correctry
     if df.empty:
         raise TypeError()
 
@@ -43,7 +43,6 @@ ld_df = read_ld_data()
 def ld_data(z, a):
     try:
         ld_data = ld_df.loc[(ld_df.Z == z) & (ld_df.A == a)].values.flatten().tolist()
-        # print(ld_data)
     except:
         print('unknown level density nuclide: ', z, a)
     return ld_data
@@ -57,14 +56,12 @@ def gilbert_cameron_type_ld():
 def ld_shell_correction(u, lda, shellcorrection, mass):
     gamma = 0.31 * (mass**(-1/3.0))
     ax = lda
-    # print(u, lda, shellcorrection, mass)
 
     if (u > 0.0):
         ax = lda * (1.0 + (1.0-math.exp(-gamma*u))*shellcorrection/u)
     elif(u == 0.0):
         ax = lda * (1.0+gamma*shellcorrection) 
-        
-    # print(mass, lda, ax)
+
     return ax
 
 
@@ -74,5 +71,5 @@ def kckAsymptoticLevelDensity(a):
 
 if __name__ == "__main__":
     ld_data(30,  84)
-    # pass
+
 

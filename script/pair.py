@@ -1,7 +1,6 @@
 from params import ACN, ZCN
 from func import mass_excess
 
-# fractional_df = pd.DataFrame()
 class FFPair:
     def __init__(self, zh, ah, mcn, tke_ah_dict, fractional_df):
         self.zh = int(zh)
@@ -38,12 +37,10 @@ class FFPair:
 
 
     def get_ave_tke(self):
-        # df = pd.DataFrame(columns = ['charge_h', 'mass_h', 'pair_yield'])
         return self.tke_ah_dict[self.ah]
 
 
     def get_ffyield(self):
-        # df = pd.DataFrame(columns = ['charge_h', 'mass_h', 'pair_yield'])
         return self.fractional_df.loc[
             (self.fractional_df.charge_h == float(self.zh))
             & (self.fractional_df.mass_h == float(self.ah))
@@ -61,22 +58,3 @@ class FFPair:
     def q_value(self):
         return self.mcn - self.pair_mass_excess()
 
-    # def get_paircharge_product(self):
-    #     zh_charge_list = self.fractional_df.loc[self.fractional_df.mass_h == float(self.ah)][
-    #         "charge_h"
-    #     ].to_list()
-
-    #     zl_charge_list = [ZCN - self.ah for self.ah in zh_charge_list]
-
-    #     print(zh_charge_list)
-    #     print(zl_charge_list)
-
-    #     charge_prod = [zh_charge_list[i] * zl_charge_list[i] for i in range(len(zh_charge_list))]
-
-    #     print(charge_prod)
-
-    #     s = math.prod(charge_prod)
-    #     n = len(zh_charge_list)
-    #     ss = self.tke_ah_dict[self.ah] * n / s
-
-    #     return ss

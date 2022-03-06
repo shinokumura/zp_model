@@ -15,24 +15,23 @@ def zp_parameter_function(p):
     mass_ex_tn = mass_excess(ZCN, ACN - 1)  # only the case of the first chance fission
     mass_ex_cn = mass_excess(ZCN, ACN)
     
-    # separation energy of fissioning system
+    ## separation energy of fissioning system
     sep_cn = n_ind_sep_en(mass_ex_tn, mass_ex_cn)
 
     if(EIN < 8.0):
-        # low energty < 8 MeV
+        ## low energty < 8 MeV
         da = ACN - 236.0
         de = sep_cn + EIN - 6.551
         x = p[0] + p[1]*dz + p[2]*da + p[3]*de + p[4]*da*da
 
     else:
-        # high energy upto 20 MeV
+        ## high energy upto 20 MeV
         p1 = p[0] + p[2]*dz
         p2 = p[1] + p[3]*dz
         x = p1 + (p2 - p1)*(1.0 - math.exp(-p[4]*de))
 
     return x
 
-# def set_zp_parameters():
 sigma_z140 = zp_parameter_function([  0.566 ,  0.0,  0.0064,  0.0109,  0.0    ])
 delta_z140 = zp_parameter_function([ -0.487 ,  0.0,  0.0180,  0.0   , -0.00203])
 fz_z140    = zp_parameter_function([  1.207 ,  0.0, -0.0420,  0.0   ,  0.0022 ])
@@ -163,16 +162,22 @@ def wahl_systematics(a):
 
     if(ap < bd["b1"]):
        return  _far_wing()
+
     elif(ap < bd["b2"]):
         return _wing()
+
     elif(ap < bd["b3"]):
         return _peak()
+
     elif(ap < bd["b4"]):
         return _symm()
+
     elif(ap < bd["b5"]):
         return _peak()
+
     elif(ap < bd["b6"]):
         return _wing()
+        
     else:
         return _far_wing()
 
