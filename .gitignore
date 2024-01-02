@@ -1,0 +1,52 @@
+# masOS hidden files
+*.DS_Store
+__pycache__/
+script/__pycache__/
+.python-version
+.ipynb_checkpoints
+
+# LaTeX build files
+*.dvi
+*.aux
+*.blg
+*.lof
+*.log
+*.lot
+*.out
+*.ttt
+*.fff
+*.synctex.gz
+*.synctex
+*.toc
+*.spl
+leer.eps
+*.spl
+*.sh
+*~
+#delayedn.pdf
+
+# other temporary files
+\#*\#
+.\#*
+ref/*
+*conflicted*
+*.swp
+*.bak
+
+# Automatically generated eps and convert outputs
+*-eps-converted-to.pdf
+
+# private files if you want to keep them locally
+local
+
+#plot/*.eps
+mkdocs/u,;
+setup.py
+
+# examples
+example/*
+# gnuplot/*
+talys-calc/*
+data/Yza*
+data/nuA*
+data/sample.dat
